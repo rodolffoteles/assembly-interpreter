@@ -6,6 +6,7 @@ from memory import Memory
 
 ARITHMETIC_CYCLES = 1
 MEMORY_CYCLES = 10
+JUMP_CYCLES = 3
 
 class Processor:
 	def __init__(self, memory, number_registers=10):
@@ -24,22 +25,27 @@ class Processor:
 			'div': self.div,
 			'divi': self.divi,
 			'str': self.store,
+			'stro': self.storeoff,
 			'ld': self.load,
+			'ldo': self.loadoff,
 			'mov': self.move,
 			'jp': self.jump,
-			'beq': self.beq,
-			'bnq': self.bnq,
-			'slt': self.slt		
+			'jeq': self.jeq,
+			'jnq': self.jnq,
+			'jlt': self.jlt,
+			'jgt': self.jgt	
 		}
 
 		self.execute()	
 
 	def execute(self):
 		while(True):
-			self.ir = memory.get_instruction(self.pc)
 			self.write_registers()
+			self.ir = memory.get_instruction(self.pc)
 			self.pc += 1
-			if not self.decode(self.ir): break
+			if not self.decode(self.ir):
+				self.memory.save()
+				break
 
 	def decode(self, instruction):
 		operation_code = instruction[0]
@@ -94,9 +100,19 @@ class Processor:
 		self.memory.write(first, self.registers[second])
 		self.clock_cycle += MEMORY_CYCLES
 
+	def storeoff(self, params):
+		first, second = [int(sub('[^0-9]', '', p)) for p in params]
+		self.memory.write(first, self.registers[second + third])
+		self.clock_cycle += MEMORY_CYCLES
+
 	def load(self, params):
 		first, second = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[second] = self.memory.read(first)
+		self.registers[first] = self.memory.read(second)
+		self.clock_cycle += MEMORY_CYCLES
+
+	def loadoff(self, params):
+		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
+		self.registers[first] = self.memory.read(second + third)
 		self.clock_cycle += MEMORY_CYCLES
 
 	def move(self, params):
@@ -107,30 +123,40 @@ class Processor:
 	def jump(self, params):
 		first = int(sub('[^0-9]', '', params[0]))
 		self.pc = first
-		self.clock_cycle += ARITHMETIC_CYCLES
+		self.clock_cycle += JUMP_CYCLES
 
-	def beq(self, params):
+	def jeq(self, params):
 		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
+		self.clock_cycle += JUMP_CYCLES
 		if self.registers[first] == self.registers[second]:
 			self.pc = third
 
-	def bnq(self, params):
+	def jnq(self, params):
 		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
+		self.clock_cycle += JUMP_CYCLES
 		if self.registers[first] != self.registers[second]:
 			self.pc = third
 
-	def slt(self, params):
+	def jlt(self, params):
 		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		if self.registers[second] != self.registers[third]:
-			self.registers[first] = 0
-		else:
-			self.registers[first] = 1
+		self.clock_cycle += JUMP_CYCLES
+		if self.registers[second] < self.registers[third]:
+			self.pc = third
+
+	def jgt(self, params):
+		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
+		self.clock_cycle += JUMP_CYCLES
+		if self.registers[second] > self.registers[third]:
+			self.pc = third
 
 	def write_registers(self):
 		with open('registers.text','a') as file:
-			file.write(f'{self.pc} º INSTRUCAO {self.ir}\n')
-			for index, value in enumerate(self.registers):
-				file.write(f'{index} registrador: {value}\n')
+			file.write(f'pc = {self.pc}\n') 
+			file.write(f'clock = {self.clock_cycle}\n')
+			if self.ir is not '':
+				file.write(f'instruction = {self.ir[0]} {" ".join(self.ir[1])}\n') 
+			file.write(f'registers = {" ".join([str(r) for r in self.registers])}\n')
+			file.write(f'{"-"*10}\n')
 
 if __name__ == "__main__":
 	if exists('registers.text'): remove('registers.text')

@@ -2,6 +2,7 @@ class Memory:
 	def __init__(self, program_file, data_file):
 		self.instructions = []
 		self.load_program(program_file)
+		self.data_file = data_file
 		self.data = []
 		self.load_data(data_file)
 
@@ -24,4 +25,8 @@ class Memory:
 
 	def read(self, address):
 		return self.data[address - 1]
+
+	def save(self):
+		with open(self.data_file,'w') as file:
+			file.write('\n'.join([str(m) for m in self.data]))
 	
