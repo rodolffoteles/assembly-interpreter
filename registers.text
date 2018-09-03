@@ -1,0 +1,154 @@
+0 º INSTRUCAO ['ld', ['mem1,', 'reg2']]
+0 registrador: 0
+1 registrador: 0
+2 registrador: 0
+3 registrador: 0
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+1 º INSTRUCAO ['ld', ['mem2,', 'reg3']]
+0 registrador: 0
+1 registrador: 0
+2 registrador: 10
+3 registrador: 0
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+2 º INSTRUCAO ['add', ['reg0,', 'reg2,', 'reg3']]
+0 registrador: 0
+1 registrador: 0
+2 registrador: 10
+3 registrador: 15
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+3 º INSTRUCAO ['addi', ['reg2,', 'reg2,', '5']]
+0 registrador: 25
+1 registrador: 0
+2 registrador: 10
+3 registrador: 15
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+4 º INSTRUCAO ['str', ['mem1,', 'reg0']]
+0 registrador: 25
+1 registrador: 0
+2 registrador: 15
+3 registrador: 15
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+5 º INSTRUCAO ['beq', ['reg2,', 'reg3,', '0']]
+0 registrador: 25
+1 registrador: 0
+2 registrador: 15
+3 registrador: 15
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+0 º INSTRUCAO ['ld', ['mem1,', 'reg2']]
+0 registrador: 25
+1 registrador: 0
+2 registrador: 15
+3 registrador: 15
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+1 º INSTRUCAO ['ld', ['mem2,', 'reg3']]
+0 registrador: 25
+1 registrador: 0
+2 registrador: 25
+3 registrador: 15
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+2 º INSTRUCAO ['add', ['reg0,', 'reg2,', 'reg3']]
+0 registrador: 25
+1 registrador: 0
+2 registrador: 25
+3 registrador: 15
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+3 º INSTRUCAO ['addi', ['reg2,', 'reg2,', '5']]
+0 registrador: 40
+1 registrador: 0
+2 registrador: 25
+3 registrador: 15
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+4 º INSTRUCAO ['str', ['mem1,', 'reg0']]
+0 registrador: 40
+1 registrador: 0
+2 registrador: 30
+3 registrador: 15
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+5 º INSTRUCAO ['beq', ['reg2,', 'reg3,', '0']]
+0 registrador: 40
+1 registrador: 0
+2 registrador: 30
+3 registrador: 15
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+6 º INSTRUCAO ['addi', ['reg3,', 'reg3,', '1']]
+0 registrador: 40
+1 registrador: 0
+2 registrador: 30
+3 registrador: 15
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0
+7 º INSTRUCAO ['eof', []]
+0 registrador: 40
+1 registrador: 0
+2 registrador: 30
+3 registrador: 16
+4 registrador: 0
+5 registrador: 0
+6 registrador: 0
+7 registrador: 0
+8 registrador: 0
+9 registrador: 0

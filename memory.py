@@ -1,27 +1,27 @@
-from numpy import zeros
-
 class Memory:
-	def __init__(self, mem_size, program_file):
-		self.instructions = self.load_program(program_file)
-		self.data = np.zeros(mem_size, dtype=int)
+	def __init__(self, program_file, data_file):
+		self.instructions = []
+		self.load_program(program_file)
+		self.data = []
+		self.load_data(data_file)
 
 	def load_program(self, program_file):
-		instructions = []
 		with open(program_file,'r') as file:
 			for line in file: 
 				code = line.strip().split(' ')
-				instructions.append([code[0], code[1:]])
-		return instructions
+				self.instructions.append([code[0], code[1:]])
 
-	def get_instruction(self, index):
-		return self.instructions[index]
+	def load_data(self, data_file):
+		with open(data_file,'r') as file:
+			for line in file: 
+				self.data.append(int(line.strip()))
 
-	def write(self, index, data):
-		self.data[index] = data
+	def get_instruction(self, address):
+		return self.instructions[address]
 
-	def read(self, index):
-		return self.data[index]
+	def write(self, address, data):
+		self.data[address - 1] = data
 
-if __name__ == "__main__":
-	memory = Memory(20, 'teste.asm')
+	def read(self, address):
+		return self.data[address - 1]
 	
