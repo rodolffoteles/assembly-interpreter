@@ -1,0 +1,374 @@
+pc = 0
+clock = 0
+registers = 0 0 0 0 0 0 0 0 0 0
+----------
+pc = 1
+clock = 1
+instruction = ld reg1, reg0, 0
+registers = 0 10 0 0 0 0 0 0 0 0
+----------
+pc = 2
+clock = 2
+instruction = li reg2, 0
+registers = 0 10 0 0 0 0 0 0 0 0
+----------
+pc = 3
+clock = 3
+instruction = li reg4, 0
+registers = 0 10 0 0 0 0 0 0 0 0
+----------
+pc = 4
+clock = 4
+instruction = addi reg2, reg2, 1
+registers = 0 10 1 0 0 0 0 0 0 0
+----------
+pc = 5
+clock = 5
+instruction = ld reg3, reg2, 0
+registers = 0 10 1 1 0 0 0 0 0 0
+----------
+pc = 6
+clock = 6
+instruction = add reg4, reg4, reg3
+registers = 0 10 1 1 1 0 0 0 0 0
+----------
+pc = 7
+clock = 7
+instruction = subi reg1, reg1, 1
+registers = 0 9 1 1 1 0 0 0 0 0
+----------
+pc = 8
+clock = 8
+instruction = slt reg5, reg1, reg0
+registers = 0 9 1 1 1 0 0 0 0 0
+----------
+pc = 3
+clock = 9
+instruction = beq reg5, reg0, 3
+registers = 0 9 1 1 1 0 0 0 0 0
+----------
+pc = 4
+clock = 10
+instruction = addi reg2, reg2, 1
+registers = 0 9 2 1 1 0 0 0 0 0
+----------
+pc = 5
+clock = 11
+instruction = ld reg3, reg2, 0
+registers = 0 9 2 2 1 0 0 0 0 0
+----------
+pc = 6
+clock = 12
+instruction = add reg4, reg4, reg3
+registers = 0 9 2 2 3 0 0 0 0 0
+----------
+pc = 7
+clock = 13
+instruction = subi reg1, reg1, 1
+registers = 0 8 2 2 3 0 0 0 0 0
+----------
+pc = 8
+clock = 14
+instruction = slt reg5, reg1, reg0
+registers = 0 8 2 2 3 0 0 0 0 0
+----------
+pc = 3
+clock = 15
+instruction = beq reg5, reg0, 3
+registers = 0 8 2 2 3 0 0 0 0 0
+----------
+pc = 4
+clock = 16
+instruction = addi reg2, reg2, 1
+registers = 0 8 3 2 3 0 0 0 0 0
+----------
+pc = 5
+clock = 17
+instruction = ld reg3, reg2, 0
+registers = 0 8 3 3 3 0 0 0 0 0
+----------
+pc = 6
+clock = 18
+instruction = add reg4, reg4, reg3
+registers = 0 8 3 3 6 0 0 0 0 0
+----------
+pc = 7
+clock = 19
+instruction = subi reg1, reg1, 1
+registers = 0 7 3 3 6 0 0 0 0 0
+----------
+pc = 8
+clock = 20
+instruction = slt reg5, reg1, reg0
+registers = 0 7 3 3 6 0 0 0 0 0
+----------
+pc = 3
+clock = 21
+instruction = beq reg5, reg0, 3
+registers = 0 7 3 3 6 0 0 0 0 0
+----------
+pc = 4
+clock = 22
+instruction = addi reg2, reg2, 1
+registers = 0 7 4 3 6 0 0 0 0 0
+----------
+pc = 5
+clock = 23
+instruction = ld reg3, reg2, 0
+registers = 0 7 4 4 6 0 0 0 0 0
+----------
+pc = 6
+clock = 24
+instruction = add reg4, reg4, reg3
+registers = 0 7 4 4 10 0 0 0 0 0
+----------
+pc = 7
+clock = 25
+instruction = subi reg1, reg1, 1
+registers = 0 6 4 4 10 0 0 0 0 0
+----------
+pc = 8
+clock = 26
+instruction = slt reg5, reg1, reg0
+registers = 0 6 4 4 10 0 0 0 0 0
+----------
+pc = 3
+clock = 27
+instruction = beq reg5, reg0, 3
+registers = 0 6 4 4 10 0 0 0 0 0
+----------
+pc = 4
+clock = 28
+instruction = addi reg2, reg2, 1
+registers = 0 6 5 4 10 0 0 0 0 0
+----------
+pc = 5
+clock = 29
+instruction = ld reg3, reg2, 0
+registers = 0 6 5 5 10 0 0 0 0 0
+----------
+pc = 6
+clock = 30
+instruction = add reg4, reg4, reg3
+registers = 0 6 5 5 15 0 0 0 0 0
+----------
+pc = 7
+clock = 31
+instruction = subi reg1, reg1, 1
+registers = 0 5 5 5 15 0 0 0 0 0
+----------
+pc = 8
+clock = 32
+instruction = slt reg5, reg1, reg0
+registers = 0 5 5 5 15 0 0 0 0 0
+----------
+pc = 3
+clock = 33
+instruction = beq reg5, reg0, 3
+registers = 0 5 5 5 15 0 0 0 0 0
+----------
+pc = 4
+clock = 34
+instruction = addi reg2, reg2, 1
+registers = 0 5 6 5 15 0 0 0 0 0
+----------
+pc = 5
+clock = 35
+instruction = ld reg3, reg2, 0
+registers = 0 5 6 6 15 0 0 0 0 0
+----------
+pc = 6
+clock = 36
+instruction = add reg4, reg4, reg3
+registers = 0 5 6 6 21 0 0 0 0 0
+----------
+pc = 7
+clock = 37
+instruction = subi reg1, reg1, 1
+registers = 0 4 6 6 21 0 0 0 0 0
+----------
+pc = 8
+clock = 38
+instruction = slt reg5, reg1, reg0
+registers = 0 4 6 6 21 0 0 0 0 0
+----------
+pc = 3
+clock = 39
+instruction = beq reg5, reg0, 3
+registers = 0 4 6 6 21 0 0 0 0 0
+----------
+pc = 4
+clock = 40
+instruction = addi reg2, reg2, 1
+registers = 0 4 7 6 21 0 0 0 0 0
+----------
+pc = 5
+clock = 41
+instruction = ld reg3, reg2, 0
+registers = 0 4 7 7 21 0 0 0 0 0
+----------
+pc = 6
+clock = 42
+instruction = add reg4, reg4, reg3
+registers = 0 4 7 7 28 0 0 0 0 0
+----------
+pc = 7
+clock = 43
+instruction = subi reg1, reg1, 1
+registers = 0 3 7 7 28 0 0 0 0 0
+----------
+pc = 8
+clock = 44
+instruction = slt reg5, reg1, reg0
+registers = 0 3 7 7 28 0 0 0 0 0
+----------
+pc = 3
+clock = 45
+instruction = beq reg5, reg0, 3
+registers = 0 3 7 7 28 0 0 0 0 0
+----------
+pc = 4
+clock = 46
+instruction = addi reg2, reg2, 1
+registers = 0 3 8 7 28 0 0 0 0 0
+----------
+pc = 5
+clock = 47
+instruction = ld reg3, reg2, 0
+registers = 0 3 8 8 28 0 0 0 0 0
+----------
+pc = 6
+clock = 48
+instruction = add reg4, reg4, reg3
+registers = 0 3 8 8 36 0 0 0 0 0
+----------
+pc = 7
+clock = 49
+instruction = subi reg1, reg1, 1
+registers = 0 2 8 8 36 0 0 0 0 0
+----------
+pc = 8
+clock = 50
+instruction = slt reg5, reg1, reg0
+registers = 0 2 8 8 36 0 0 0 0 0
+----------
+pc = 3
+clock = 51
+instruction = beq reg5, reg0, 3
+registers = 0 2 8 8 36 0 0 0 0 0
+----------
+pc = 4
+clock = 52
+instruction = addi reg2, reg2, 1
+registers = 0 2 9 8 36 0 0 0 0 0
+----------
+pc = 5
+clock = 53
+instruction = ld reg3, reg2, 0
+registers = 0 2 9 9 36 0 0 0 0 0
+----------
+pc = 6
+clock = 54
+instruction = add reg4, reg4, reg3
+registers = 0 2 9 9 45 0 0 0 0 0
+----------
+pc = 7
+clock = 55
+instruction = subi reg1, reg1, 1
+registers = 0 1 9 9 45 0 0 0 0 0
+----------
+pc = 8
+clock = 56
+instruction = slt reg5, reg1, reg0
+registers = 0 1 9 9 45 0 0 0 0 0
+----------
+pc = 3
+clock = 57
+instruction = beq reg5, reg0, 3
+registers = 0 1 9 9 45 0 0 0 0 0
+----------
+pc = 4
+clock = 58
+instruction = addi reg2, reg2, 1
+registers = 0 1 10 9 45 0 0 0 0 0
+----------
+pc = 5
+clock = 59
+instruction = ld reg3, reg2, 0
+registers = 0 1 10 10 45 0 0 0 0 0
+----------
+pc = 6
+clock = 60
+instruction = add reg4, reg4, reg3
+registers = 0 1 10 10 55 0 0 0 0 0
+----------
+pc = 7
+clock = 61
+instruction = subi reg1, reg1, 1
+registers = 0 0 10 10 55 0 0 0 0 0
+----------
+pc = 8
+clock = 62
+instruction = slt reg5, reg1, reg0
+registers = 0 0 10 10 55 0 0 0 0 0
+----------
+pc = 3
+clock = 63
+instruction = beq reg5, reg0, 3
+registers = 0 0 10 10 55 0 0 0 0 0
+----------
+pc = 4
+clock = 64
+instruction = addi reg2, reg2, 1
+registers = 0 0 11 10 55 0 0 0 0 0
+----------
+pc = 5
+clock = 65
+instruction = ld reg3, reg2, 0
+registers = 0 0 11 0 55 0 0 0 0 0
+----------
+pc = 6
+clock = 66
+instruction = add reg4, reg4, reg3
+registers = 0 0 11 0 55 0 0 0 0 0
+----------
+pc = 7
+clock = 67
+instruction = subi reg1, reg1, 1
+registers = 0 -1 11 0 55 0 0 0 0 0
+----------
+pc = 8
+clock = 68
+instruction = slt reg5, reg1, reg0
+registers = 0 -1 11 0 55 1 0 0 0 0
+----------
+pc = 9
+clock = 69
+instruction = beq reg5, reg0, 3
+registers = 0 -1 11 0 55 1 0 0 0 0
+----------
+pc = 10
+clock = 70
+instruction = ld reg1, reg0, 0
+registers = 0 10 11 0 55 1 0 0 0 0
+----------
+pc = 11
+clock = 71
+instruction = mov reg3, reg1
+registers = 0 10 11 10 55 1 0 0 0 0
+----------
+pc = 12
+clock = 72
+instruction = addi reg3, reg3, 1
+registers = 0 10 11 11 55 1 0 0 0 0
+----------
+pc = 13
+clock = 73
+instruction = div reg2, reg4, reg1
+registers = 0 10 5 11 55 1 0 0 0 0
+----------
+pc = 14
+clock = 74
+instruction = str reg2, reg3, 0
+registers = 0 10 5 11 55 1 0 0 0 0
+----------

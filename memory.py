@@ -1,9 +1,11 @@
+import numpy as np
+
 class Memory:
 	def __init__(self, program_file, data_file):
 		self.instructions = []
 		self.load_program(program_file)
 		self.data_file = data_file
-		self.data = []
+		self.data = np.zeros(100, dtype=int)
 		self.load_data(data_file)
 
 	def load_program(self, program_file):
@@ -14,17 +16,17 @@ class Memory:
 
 	def load_data(self, data_file):
 		with open(data_file,'r') as file:
-			for line in file: 
-				self.data.append(int(line.strip()))
+			for index, value in enumerate(file.readlines()): 
+				self.data[index] = value
 
 	def get_instruction(self, address):
 		return self.instructions[address]
 
 	def write(self, address, data):
-		self.data[address - 1] = data
+		self.data[address] = data
 
 	def read(self, address):
-		return self.data[address - 1]
+		return self.data[address]
 
 	def save(self):
 		with open(self.data_file,'w') as file:

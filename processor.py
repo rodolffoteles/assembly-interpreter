@@ -3,10 +3,11 @@ from os import remove
 from numpy import zeros
 from re import sub 
 from memory import Memory
+import sys
 
-ARITHMETIC_CYCLES = 1
-MEMORY_CYCLES = 10
-JUMP_CYCLES = 3
+ALU_CYCLES = 1
+MEMORY_CYCLES = 1
+JUMP_CYCLES = 1
 
 class Processor:
 	def __init__(self, memory, number_registers=10):
@@ -25,15 +26,13 @@ class Processor:
 			'div': self.div,
 			'divi': self.divi,
 			'str': self.store,
-			'stro': self.storeoff,
 			'ld': self.load,
-			'ldo': self.loadoff,
+			'li': self.li,
 			'mov': self.move,
 			'jp': self.jump,
-			'jeq': self.jeq,
-			'jnq': self.jnq,
-			'jlt': self.jlt,
-			'jgt': self.jgt	
+			'beq': self.beq,
+			'bnq': self.bnq,
+			'slt': self.slt
 		}
 
 		self.execute()	
@@ -56,101 +55,95 @@ class Processor:
 			return True
 
 	def add(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[first] = self.registers[second] + self.registers[third]
-		self.clock_cycle += ARITHMETIC_CYCLES
+		destination, first, second = [int(sub('[^0-9]', '', p)) for p in params]
+		self.registers[destination] = self.registers[first] + self.registers[second]
+		self.clock_cycle += ALU_CYCLES
 
 	def addi(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[first] = self.registers[second] + third
-		self.clock_cycle += ARITHMETIC_CYCLES
+		destination, first, immediate = [int(sub('[^0-9]', '', p)) for p in params]
+		self.registers[destination] = self.registers[first] + immediate
+		self.clock_cycle += ALU_CYCLES
 
 	def sub(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[first] = self.registers[second] - self.registers[third]
-		self.clock_cycle += ARITHMETIC_CYCLES
+		destination, first, second = [int(sub('[^0-9]', '', p)) for p in params]
+		self.registers[destination] = self.registers[first] - self.registers[second]
+		self.clock_cycle += ALU_CYCLES
 
 	def subi(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[first] = self.registers[second] - third
-		self.clock_cycle += ARITHMETIC_CYCLES
+		destination, first, immediate = [int(sub('[^0-9]', '', p)) for p in params]
+		self.registers[destination] = self.registers[first] - immediate
+		self.clock_cycle += ALU_CYCLES
 
 	def mult(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[first] = self.registers[second] * self.registers[third]
-		self.clock_cycle += ARITHMETIC_CYCLES
+		destination, first, second = [int(sub('[^0-9]', '', p)) for p in params]
+		self.registers[destination] = self.registers[first] * self.registers[second]
+		self.clock_cycle += ALU_CYCLES
 
 	def multi(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[first] = self.registers[second] * third
-		self.clock_cycle += ARITHMETIC_CYCLES
+		destination, first, immediate = [int(sub('[^0-9]', '', p)) for p in params]
+		self.registers[destination] = self.registers[first] * immediate
+		self.clock_cycle += ALU_CYCLES
 
 	def div(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[first] = self.registers[second] / self.registers[third]
-		self.clock_cycle += ARITHMETIC_CYCLES
+		destination, first, second = [int(sub('[^0-9]', '', p)) for p in params]
+		self.registers[destination] = self.registers[first] / self.registers[second]
+		self.clock_cycle += ALU_CYCLES
 
 	def divi(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[first] = self.registers[second] / third
-		self.clock_cycle += ARITHMETIC_CYCLES
+		destination, first, immediate = [int(sub('[^0-9]', '', p)) for p in params]
+		self.registers[destination] = self.registers[first] / immediate
+		self.clock_cycle += ALU_CYCLES
 
 	def store(self, params):
-		first, second = [int(sub('[^0-9]', '', p)) for p in params]
-		self.memory.write(first, self.registers[second])
+		source, destination, offset = [int(sub('[^0-9]', '', p)) for p in params]
+		address = self.registers[destination]
+		data = self.registers[source]
+		self.memory.write(address + offset, data)
 		self.clock_cycle += MEMORY_CYCLES
 
-	def storeoff(self, params):
-		first, second = [int(sub('[^0-9]', '', p)) for p in params]
-		self.memory.write(first, self.registers[second + third])
+	def li(self, params):
+		destination, immediate = [int(sub('[^0-9]', '', p)) for p in params]
+		self.registers[destination] = immediate
 		self.clock_cycle += MEMORY_CYCLES
 
 	def load(self, params):
-		first, second = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[first] = self.memory.read(second)
-		self.clock_cycle += MEMORY_CYCLES
-
-	def loadoff(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[first] = self.memory.read(second + third)
+		destination, source, offset = [int(sub('[^0-9]', '', p)) for p in params]
+		address = self.registers[source]
+		self.registers[destination] = self.memory.read(address + offset)
 		self.clock_cycle += MEMORY_CYCLES
 
 	def move(self, params):
-		first, second = [int(sub('[^0-9]', '', p)) for p in params]
-		self.registers[first] = self.registers[second]
-		self.clock_cycle += ARITHMETIC_CYCLES
+		destination, source = [int(sub('[^0-9]', '', p)) for p in params]
+		self.registers[destination] = self.registers[source]
+		self.clock_cycle += ALU_CYCLES
 
 	def jump(self, params):
-		first = int(sub('[^0-9]', '', params[0]))
-		self.pc = first
+		address = int(sub('[^0-9]', '', params[0]))
+		self.pc = address
 		self.clock_cycle += JUMP_CYCLES
 
-	def jeq(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
+	def beq(self, params):
+		first, second, address= [int(sub('[^0-9]', '', p)) for p in params]
 		self.clock_cycle += JUMP_CYCLES
 		if self.registers[first] == self.registers[second]:
-			self.pc = third
+			self.pc = address
 
-	def jnq(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
+	def bnq(self, params):
+		first, second, address = [int(sub('[^0-9]', '', p)) for p in params]
 		self.clock_cycle += JUMP_CYCLES
 		if self.registers[first] != self.registers[second]:
-			self.pc = third
+			self.pc = address
 
-	def jlt(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		self.clock_cycle += JUMP_CYCLES
-		if self.registers[second] < self.registers[third]:
-			self.pc = third
-
-	def jgt(self, params):
-		first, second, third = [int(sub('[^0-9]', '', p)) for p in params]
-		self.clock_cycle += JUMP_CYCLES
-		if self.registers[second] > self.registers[third]:
-			self.pc = third
+	def slt(self, params):
+		destination, first, second = [int(sub('[^0-9]', '', p)) for p in params]
+		self.clock_cycle += ALU_CYCLES
+		if self.registers[first] < self.registers[second]:
+			self.registers[destination] = 1
+		else:
+			self.registers[destination] = 0
 
 	def write_registers(self):
-		with open('registers.text','a') as file:
+		with open('registers.txt','a') as file:
 			file.write(f'pc = {self.pc}\n') 
 			file.write(f'clock = {self.clock_cycle}\n')
 			if self.ir is not '':
@@ -158,7 +151,11 @@ class Processor:
 			file.write(f'registers = {" ".join([str(r) for r in self.registers])}\n')
 			file.write(f'{"-"*10}\n')
 
-if __name__ == "__main__":
-	if exists('registers.text'): remove('registers.text')
-	memory = Memory('teste.asm', 'data.txt')
+if __name__ == '__main__':
+	if exists('registers.txt'): remove('registers.txt')
+	if len(sys.argv) != 3: 
+		print('Usage: python processor.py program_file.txt data_file.txt')
+		sys.exit(1)
+
+	memory = Memory(sys.argv[1], sys.argv[2])
 	cpu = Processor(memory)
