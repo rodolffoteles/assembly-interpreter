@@ -31,7 +31,7 @@ class Processor:
 			'mov': self.move,
 			'jp': self.jump,
 			'beq': self.beq,
-			'bnq': self.bnq,
+			'bne': self.bne,
 			'slt': self.slt
 		}
 
@@ -128,7 +128,7 @@ class Processor:
 		if self.registers[first] == self.registers[second]:
 			self.pc = address
 
-	def bnq(self, params):
+	def bne(self, params):
 		first, second, address = [int(sub('[^0-9]', '', p)) for p in params]
 		self.clock_cycle += JUMP_CYCLES
 		if self.registers[first] != self.registers[second]:
@@ -157,5 +157,5 @@ if __name__ == '__main__':
 		print('Usage: python processor.py program_file.txt data_file.txt')
 		sys.exit(1)
 
-	memory = Memory(sys.argv[1], sys.argv[2])
+	memory = Memory(15, sys.argv[1], sys.argv[2])
 	cpu = Processor(memory)
