@@ -1,12 +1,14 @@
 import numpy as np
 from re import sub, search, match
 
-class Memory:
-	def __init__(self, mem_size, program_file, data_file):
+class MainMemory:
+	def __init__(self, mem_size, block_size, program_file, data_file):
+		self.block_size = block_size
 		self.instructions = []
 		self.load_program(program_file)
 		self.data_file = data_file
-		self.data = np.zeros(mem_size, dtype=int)
+		self.data = [[0 for _ in range(block_size)]\
+						for _ in range(int(mem_size/block_size))]
 		self.load_data(data_file)
 
 	def link_jumps(self, jump_labels, jump_addresses):
@@ -42,7 +44,8 @@ class Memory:
 	def load_data(self, data_file):
 		with open(data_file,'r') as file:
 			for index, value in enumerate(file.readlines()): 
-				self.data[index] = value
+				i, j = divmod(index, block_size)
+				self.data[i][j] = value
 
 	def get_instruction(self, address):
 		return self.instructions[address]
