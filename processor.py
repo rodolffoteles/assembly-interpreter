@@ -3,6 +3,7 @@ from os import remove
 from numpy import zeros
 from re import sub 
 from memory import MainMemory
+from cache import Cache
 import sys
 
 ALU_CYCLES = 1
@@ -15,7 +16,8 @@ class Processor:
         self.clock_cycle = 0
         self.ir = ''
         self.pc = 0
-        self.memory = memory
+        self.main_memory = main_memory
+        self.cache = cache
         self.switcher = {
             'add': self.add,
             'addi': self.addi,
@@ -41,10 +43,11 @@ class Processor:
     def execute(self):
         while(True):
             self.write_registers()
-            self.ir = memory.get_instruction(self.pc)
+            self.ir = self.main_memory.get_instruction(self.pc)
             self.pc += 1
             if not self.decode(self.ir):
-                self.memory.save()
+                self.main_memory.save()
+                print(f'MISS RATE = {self.cache.get_miss_rate()}')
                 break
 
     def decode(self, instruction):
@@ -170,6 +173,6 @@ if __name__ == '__main__':
     cache = Cache(cache_size=50,
                   block_size=3,
                   set_count=2, 
-                  algoritm='FIFO',
+                  algorithm='FIFO',
                   main_memory=memory)
-    cpu = Processor(cache)
+    cpu = Processor(memory, cache)

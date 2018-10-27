@@ -3,10 +3,11 @@ from re import sub, search, match
 class MainMemory:
 	def __init__(self, mem_size, block_size, program_file, data_file):
 		self.block_size = block_size
+		self.mem_size = mem_size
 		self.instructions = []
 		self.load_program(program_file)
 		self.data_file = data_file
-		self.data = [[0]*BLOCK_SIZE for _ in range(int(mem_size/BLOCK_SIZE))]
+		self.data = [[0]*block_size for _ in range(int(mem_size/block_size))]
 		self.load_data(data_file)
 
 	def link_jumps(self, jump_labels, jump_addresses):
@@ -62,5 +63,6 @@ class MainMemory:
 
 	def save(self):
 		with open(self.data_file,'w') as file:
-			file.write('\n'.join([str(m) for m in self.data]))
+			for block in range(int(self.mem_size/self.block_size)):
+				file.write('\n'.join([str(b) for b in self.data[block]]))
 	
