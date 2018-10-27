@@ -44,7 +44,7 @@ class Processor:
             self.ir = memory.get_instruction(self.pc)
             self.pc += 1
             if not self.decode(self.ir):
-                self.cache.save_to_memory()
+                self.memory.save()
                 break
 
     def decode(self, instruction):
@@ -164,11 +164,12 @@ if __name__ == '__main__':
         sys.exit(1)
 
     memory = MainMemory(mem_size=500, 
-                        block_size=2,
+                        block_size =3,
                         program_file=sys.argv[1], 
                         data_file=sys.argv[2])
-    cache = Cache(set_count=2, 
-                  lines_per_set=3,  
-                  line_size=2, 
+    cache = Cache(cache_size=50,
+                  block_size=3,
+                  set_count=2, 
+                  algoritm='FIFO',
                   main_memory=memory)
     cpu = Processor(cache)
