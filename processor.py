@@ -4,6 +4,8 @@ from numpy import zeros
 from re import sub 
 from memory import MainMemory
 from cache import Cache
+import numpy as np
+import matplotlib.pyplot as plt
 import sys
 
 ALU_CYCLES = 1
@@ -46,7 +48,7 @@ class Processor:
             self.ir = self.main_memory.get_instruction(self.pc)
             self.pc += 1
             if not self.decode(self.ir):
-                self.main_memory.save()
+                #self.main_memory.save()
                 print(f'MISS RATE = {self.cache.get_miss_rate()}')
                 break
 
@@ -100,8 +102,8 @@ class Processor:
 
     def store(self, params):
         source, destination, offset = [int(sub('[^0-9]', '', p)) for p in params]
-        address = self.registers[destination]
         data = self.registers[source]
+        address = self.registers[destination]
         self.cache.write(address + offset, data)
         self.clock_cycle += MEMORY_CYCLES
 
@@ -158,7 +160,31 @@ class Processor:
             if self.ir is not '':
                 file.write(f'instruction = {self.ir[0]} {" ".join(self.ir[1])}\n') 
             file.write(f'registers = {" ".join([str(r) for r in self.registers])}\n')
+            #file.write(f'memory = {self.main_memory.get_data()}')
+            file.write(f'cache =\n{self.cache.get_cache()}')
+            file.write(f'miss/hit = {self.cache.get_count()}\n')
             file.write(f'{"-"*10}\n')
+
+def plot(cache_sizes, set_counts, miss_rate):
+    bar_width = 0.1 
+    index = [i for i in range(len(cache_sizes))]
+    colors = ['royalblue', 'seagreen', 'lightblue', 'teal']
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    rect = []
+    for enum, count in enumerate(set_counts):
+        rect.append(ax.bar([i + (bar_width*enum) for i in index],
+                    miss_rate[count], bar_width, color=colors[enum]))
+
+    ax.set_ylabel('Miss rate')
+    ax.set_xticks([i + (bar_width/len(cache_sizes)) for i in index])
+    ax.set_xlabel('Cache size')
+    ax.set_xticklabels(cache_sizes)
+
+    ax.legend(rect, set_counts)
+
+    plt.show()
 
 if __name__ == '__main__':
     if exists('registers.txt'): remove('registers.txt')
@@ -166,13 +192,24 @@ if __name__ == '__main__':
         print('Usage: python processor.py <program_file> <data_file>')
         sys.exit(1)
 
-    memory = MainMemory(mem_size=500, 
-                        block_size =3,
-                        program_file=sys.argv[1], 
-                        data_file=sys.argv[2])
-    cache = Cache(cache_size=50,
-                  block_size=3,
-                  set_count=2, 
-                  algorithm='FIFO',
-                  main_memory=memory)
-    cpu = Processor(memory, cache)
+    cache_sizes = [64, 128, 256]
+    set_counts = [1, 2]
+    miss_rate = {count: [] for count in set_counts}
+
+    for size in cache_sizes:
+        for count in set_counts:
+            memory = MainMemory(mem_size=512, 
+                                block_size=4,
+                                program_file=sys.argv[1], 
+                                data_file=sys.argv[2])
+            cache = Cache(cache_size=size,
+                          block_size=4,
+                          set_count=count, 
+                          algorithm='FIFO',
+                          main_memory=memory)
+            cpu = Processor(memory, cache)
+
+            miss_rate[count].append(cache.get_miss_rate()
+                
+    plot(cache_sizes, set_counts, miss_rate)
+    

@@ -1,18 +1,18 @@
-		li reg0, 0
-		ld reg1, mem(reg0), 0   #reg1 = tamanho do array
-		li reg2, 0				#reg2 = 0
-		li reg4, 0				#reg4 = 0
-		
-loop:	addi reg2, reg2, 1  	#reg2++
-		ld reg3, mem(reg2), 0 	#carrega array[reg2]
-		add reg4, reg4, reg3 	#reg4 += reg3
-		subi reg1, reg1, 1 		#reg1--
-		slt reg5, reg0, reg1 	#if reg1 > 0: reg5 = 1
-		bne reg5, reg0, loop	#if reg5 != 0 jump loop
+        li reg0, 0
+        ld reg1, mem(reg0), 0   #reg1 = tamanho do array
+        li reg2, 0              #reg2 = 0
+        li reg4, 0              #reg4 = 0
+        
+loop:   addi reg2, reg2, 1      #reg2++
+        ld reg3, mem(reg2), 0   #carrega array[reg2]
+        add reg4, reg4, reg3    #reg4 += reg3
+        subi reg1, reg1, 1      #reg1--
+        slt reg5, reg0, reg1    #if reg1 > 0: reg5 = 1
+        bne reg5, reg0, loop    #if reg5 != 0 jump loop
 
-		ld reg1, mem(reg0), 0	#reg1 = tamanho do array
-		mov reg3, reg1			#reg3 = tamanho do array + 1
-		addi reg3, reg3, 1		
-		div reg2, reg4, reg1	#reg2 = reg4/reg1
-		str reg2, mem(reg3), 0	#mem(reg3) = reg2
-		eof
+        ld reg1, mem(reg0), 0   #reg1 = tamanho do array
+        mov reg3, reg1          #reg3 = tamanho do array + 1
+        addi reg3, reg3, 1      
+        div reg2, reg4, reg1    #reg2 = reg4/reg1
+        str reg2, mem(reg3), 0  #mem(reg3) = reg2
+        eof

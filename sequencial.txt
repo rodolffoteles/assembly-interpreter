@@ -1,0 +1,8 @@
+		li reg0, 0
+		ld reg1, mem(reg0), 0 #array size
+		li reg2, 0
+for:	ld reg3, mem(reg2), 0
+		addi reg2, reg2, 1 
+		slt reg4, reg2, reg1
+		bne reg0, reg4, for
+		eof

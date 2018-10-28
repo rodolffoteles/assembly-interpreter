@@ -1,17 +1,17 @@
-		li reg0, 0					#reg0 = 0
-		ld reg1, mem(reg0), 0    	#reg1 = tamanho do array
-while:	li reg2, 1					#reg2 é o i do for
-		li reg8, 0					#reg8 conta se houve troca
-for:	ld reg3, mem(reg2), 0		#carrega array[i] e array[i+1]
-		ld reg4, mem(reg2), 1		
-		slt reg5, reg3, reg4		#se já estiver ordenado pule a troca
-		bne reg5, reg0, conti
-		str reg4, mem(reg2), 0		#troca valores da memoria e incrementa contador de troca
-		str reg3, mem(reg2), 1 
-		addi reg8, reg8, 1
-conti:	addi reg2, reg2, 1			#incrementa i e ve se houve alguma troca
-		slt reg5, reg2, reg1
-		bne reg5, reg0, for
-		bne reg8, reg0, while
-		eof
+        li reg0, 0                  #reg0 = 0
+        ld reg1, mem(reg0), 0       #reg1 = array size
+while:  li reg2, 1                  #reg2 is the for index
+        li reg8, 0                  #reg8 is the switch counter 
+for:    ld reg3, mem(reg2), 0       #load array[i] and array[i+1]
+        ld reg4, mem(reg2), 1       
+        slt reg5, reg4, reg3        #if it's ordered skip the switch
+        beq reg5, reg0, cont
+        str reg4, mem(reg2), 0      #swith the values and increment reg8
+        str reg3, mem(reg2), 1 
+        addi reg8, reg8, 1
+cont:   addi reg2, reg2, 1          #increment index and check if occured switches
+        slt reg5, reg2, reg1
+        bne reg5, reg0, for
+        bne reg8, reg0, while
+        eof
 
