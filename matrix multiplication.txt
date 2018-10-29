@@ -35,5 +35,3 @@ for_k:      mult reg10, reg6, reg2
             slt reg14, reg6, reg1
             bne reg14, reg0, for_i
             eof
-
-

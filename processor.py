@@ -176,7 +176,7 @@ def plot(cache_sizes, set_counts, miss_rate):
         rect.append(ax.bar([i + (bar_width*enum) for i in index],
                     miss_rate[count], bar_width, color=colors[enum]))
 
-    ax.set_ylabel('Miss rate')
+    ax.set_ylabel('Miss count')
     ax.set_xticks([i + (bar_width/len(cache_sizes)) for i in index])
     ax.set_xlabel('Cache size')
     ax.set_xticklabels(cache_sizes)
@@ -191,13 +191,14 @@ if __name__ == '__main__':
         print('Usage: python processor.py <program_file> <data_file>')
         sys.exit(1)
 
-    cache_sizes = [16, 32, 64, 128]
+    cache_sizes = [32, 63, 128, 256, 512]
     set_counts = [1, 2, 4, 8]
     miss_rate = {count: [] for count in set_counts}
 
     for size in cache_sizes:
         for count in set_counts:
-            memory = MainMemory(mem_size=2048, 
+            print(f'CACHE DE {size} COM {count} CONJUNTOS')
+            memory = MainMemory(mem_size=3000, 
                                 block_size=4,
                                 program_file=sys.argv[1], 
                                 data_file=sys.argv[2])
@@ -210,6 +211,6 @@ if __name__ == '__main__':
 
             miss_rate[count].append(cache.get_miss_count())
 
-    memory.save()
+    #memory.save()
     plot(cache_sizes, set_counts, miss_rate)
     

@@ -19,12 +19,13 @@ class Cache:
         block, word = divmod(address, self.block_size)
         tag, set_number = divmod(block, self.set_count)
 
+        if self.algorithm == 'LRU':
+            self.lru_tag[set_number] = [t for t in self.lru_tag[set_number] \
+                                        if t != tag] + [tag]
+
         for line in self.memory[set_number]:
             if line['tag'] == tag:
                 self.hit_count += 1
-                if self.algorithm == 'LRU':
-                    self.lru_tag[set_number] = [t for t in self.lru_tag[set_number] \
-                                                if t != tag] + [tag]
                 return line['line'][word]
         else:
             self.miss_count += 1
@@ -35,13 +36,14 @@ class Cache:
         self.main_memory.write(address, data)
         block, word = divmod(address, self.block_size)
         tag, set_number = divmod(block, self.set_count)
+
+        if self.algorithm == 'LRU':
+            self.lru_tag[set_number] = [t for t in self.lru_tag[set_number] \
+                                        if t != tag] + [tag]
     
         for line in self.memory[set_number]:
             if line['tag'] == tag:
                 self.hit_count += 1
-                if self.algorithm == 'LRU':
-                    self.lru_tag[set_number] = [t for t in self.lru_tag[set_number] \
-                                                if t != tag] + [tag]
                 line['line'][word] = data
                 break
         else:
@@ -61,8 +63,10 @@ class Cache:
                                             % self.line_per_set
             elif self.algorithm == 'LRU':
                 tag = self.lru_tag[set_number].pop(0)
-                self.lru_tag[set_number] += [new_tag] 
-
+                for index, line in enumerate(self.memory[set_number]):
+                    if line['tag'] == tag:
+                        tag = index 
+                        break
 
         self.memory[set_number][tag] = {'tag': new_tag, 'line': new_line} 
         return new_line[word]
