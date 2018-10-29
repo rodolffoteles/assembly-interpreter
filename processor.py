@@ -4,7 +4,6 @@ from numpy import zeros
 from re import sub 
 from memory import MainMemory
 from cache import Cache
-import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
@@ -13,7 +12,7 @@ MEMORY_CYCLES = 10
 JUMP_CYCLES = 5
 
 class Processor:
-    def __init__(self, main_memory, cache, register_count=10):
+    def __init__(self, main_memory, cache, register_count=16):
         self.registers = zeros(register_count, dtype=int)
         self.clock_cycle = 0
         self.ir = ''
@@ -44,7 +43,7 @@ class Processor:
 
     def execute(self):
         while(True):
-            self.write_registers()
+            #self.write_registers()
             self.ir = self.main_memory.get_instruction(self.pc)
             self.pc += 1
             if not self.decode(self.ir):
@@ -160,15 +159,15 @@ class Processor:
             if self.ir is not '':
                 file.write(f'instruction = {self.ir[0]} {" ".join(self.ir[1])}\n') 
             file.write(f'registers = {" ".join([str(r) for r in self.registers])}\n')
-            #file.write(f'memory = {self.main_memory.get_data()}')
+            file.write(f'memory = {self.main_memory.get_data()}')
             file.write(f'cache =\n{self.cache.get_cache()}')
-            file.write(f'miss/hit = {self.cache.get_count()}\n')
+            file.write(f'miss/hit = {self.cache.get_miss_count()}/{self.cache.get_hit_count()}\n')
             file.write(f'{"-"*10}\n')
 
 def plot(cache_sizes, set_counts, miss_rate):
     bar_width = 0.1 
     index = [i for i in range(len(cache_sizes))]
-    colors = ['royalblue', 'seagreen', 'lightblue', 'teal']
+    colors = ['navy', 'maroon', 'olive', 'gold']
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
@@ -192,13 +191,13 @@ if __name__ == '__main__':
         print('Usage: python processor.py <program_file> <data_file>')
         sys.exit(1)
 
-    cache_sizes = [64, 128, 256]
-    set_counts = [1, 2]
+    cache_sizes = [16, 32, 64, 128]
+    set_counts = [1, 2, 4, 8]
     miss_rate = {count: [] for count in set_counts}
 
     for size in cache_sizes:
         for count in set_counts:
-            memory = MainMemory(mem_size=512, 
+            memory = MainMemory(mem_size=2048, 
                                 block_size=4,
                                 program_file=sys.argv[1], 
                                 data_file=sys.argv[2])
@@ -209,7 +208,8 @@ if __name__ == '__main__':
                           main_memory=memory)
             cpu = Processor(memory, cache)
 
-            miss_rate[count].append(cache.get_miss_rate()
-                
+            miss_rate[count].append(cache.get_miss_count())
+
+    memory.save()
     plot(cache_sizes, set_counts, miss_rate)
     

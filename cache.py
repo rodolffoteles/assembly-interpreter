@@ -22,8 +22,9 @@ class Cache:
         for line in self.memory[set_number]:
             if line['tag'] == tag:
                 self.hit_count += 1
-                self.lru_tag[set_number] = [t for t in self.lru_tag[set_number] \
-                                           if t != tag] + [tag]
+                if self.algorithm == 'LRU':
+                    self.lru_tag[set_number] = [t for t in self.lru_tag[set_number] \
+                                                if t != tag] + [tag]
                 return line['line'][word]
         else:
             self.miss_count += 1
@@ -38,8 +39,9 @@ class Cache:
         for line in self.memory[set_number]:
             if line['tag'] == tag:
                 self.hit_count += 1
-                self.lru_tag[set_number] = [t for t in self.lru_tag[set_number] \
-                                           if t != tag] + [tag]
+                if self.algorithm == 'LRU':
+                    self.lru_tag[set_number] = [t for t in self.lru_tag[set_number] \
+                                                if t != tag] + [tag]
                 line['line'][word] = data
                 break
         else:
@@ -59,14 +61,20 @@ class Cache:
                                             % self.line_per_set
             elif self.algorithm == 'LRU':
                 tag = self.lru_tag[set_number].pop(0)
-                self.lru_tag[set_number] = [t for t in self.lru_tag[set_number] \
-                                            if t != tag] + [new_tag] 
+                self.lru_tag[set_number] += [new_tag] 
+
 
         self.memory[set_number][tag] = {'tag': new_tag, 'line': new_line} 
         return new_line[word]
     
     def get_miss_rate(self):
         return self.miss_count/(self.hit_count + self.miss_count)
+
+    def get_miss_count(self):
+        return self.miss_count
+
+    def get_hit_count(self):
+        return self.hit_count
 
     def get_cache(self):
         string = ''
@@ -78,5 +86,4 @@ class Cache:
             string += '\n'
         return string
 
-    def get_count(self):
-        return self.miss_count, self.hit_count
+    
