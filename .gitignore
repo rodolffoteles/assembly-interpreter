@@ -1,5 +1,2 @@
-__pycache__
-.ipynb_checkpoints
-registers.txt
-*.ipynb
-*.pyc
+# Compiled files
+/__pycache__
