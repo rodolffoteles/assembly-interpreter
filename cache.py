@@ -107,13 +107,3 @@ class Cache:
 
     def get_hit_count(self):
         return self.hit_count    
-
-    def __str__(self):
-        string = ''
-        for set_number in range(self.set_count):
-            string += f'SET {set_number}\n'
-            for line in self.memory[set_number]:
-                string += '\tTAG= {}\tBLOCO= {}\n' \
-                            .format(line['tag'], '\t'.join([str(l) for l in line['line']]))
-            string += '\n'
-        return string

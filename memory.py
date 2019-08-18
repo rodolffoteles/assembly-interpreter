@@ -107,10 +107,3 @@ class MainMemory:
     def read_block(self, address):
         block, word = divmod(address, self.block_size)
         return self.data[block]
-
-    def __str__(self):
-        string = ''
-        for block in range(self.block_count):
-                string += ' '.join([str(b) for b in self.data[block]])
-                string += ' '
-        return string

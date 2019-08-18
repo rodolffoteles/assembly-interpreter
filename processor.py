@@ -54,14 +54,12 @@ class Processor:
         while(True):
             self.ir = self.main_memory.get_instruction(self.program_counter)
 
-            # No instruction to execute, save the data t6 the secondary mermory and stop
+            # No instruction to execute, save the data to the secondary memory and stop
             if not self.ir:
-                #self.main_memory.save()
                 break
 
             self.program_counter += 1
             self.decode(**self.ir)
-            #self.write_registers()
 
     def decode(self, opcode, operands):
         self.switcher[opcode]['function'](opcode, operands)
@@ -82,7 +80,7 @@ class Processor:
                 matched = search(self.operand_regex[category], operand)
 
                 if not matched:
-                    raise Exception(f'Wrong operands types for {opcode} instruction')
+                    raise Exception(f'Wrong operands for {opcode} instruction, expected a {category}')
                 
                 start, end = matched.span()
                 processed_operands.append(int(operand[start:end]))
@@ -176,16 +174,3 @@ class Processor:
             self.registers[destination] = 1
         else:
             self.registers[destination] = 0
-
-
-    def write_registers(self):
-        with open('registers.txt','a') as file:
-            file.write(f'pc = {self.program_counter}\n') 
-            file.write(f'clock = {self.clock_cycle}\n')
-            if self.ir is not '':
-                file.write(f'instruction = {self.ir["opcode"]} {" ".join(self.ir["operands"])}\n') 
-            file.write(f'registers = {" ".join([str(r) for r in self.registers])}\n')
-            file.write(f'memory = {str(self.main_memory)}\n')
-            file.write(f'cache =\n{str(self.cache)}')
-            file.write(f'miss/hit = {self.cache.get_miss_count()}/{self.cache.get_hit_count()}\n')
-            file.write(f'{"-"*10}\n')
