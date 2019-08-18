@@ -1,216 +1,191 @@
-from os.path import exists
-from os import remove
 from numpy import zeros
-from re import sub 
-from memory import MainMemory
-from cache import Cache
-import matplotlib.pyplot as plt
-import sys
+from re import sub, search
 
 ALU_CYCLES = 1
-MEMORY_CYCLES = 10
+MEMORY_CYCLES = 100
 JUMP_CYCLES = 5
 
 class Processor:
+    '''Simulates the behaviour of a CPU'''
+
     def __init__(self, main_memory, cache, register_count=16):
+        '''
+        Parameters:
+            main_memory - Main memory of the processor
+            cache - Cache memory of the processor
+            register_count - Quantity of registers in the processor (default is 16)
+        '''
+
+        self.main_memory = main_memory
+        self.cache = cache
         self.registers = zeros(register_count, dtype=int)
         self.clock_cycle = 0
         self.ir = ''
-        self.pc = 0
-        self.main_memory = main_memory
-        self.cache = cache
-        self.switcher = {
-            'add': self.add,
-            'addi': self.addi,
-            'sub': self.sub,
-            'subi': self.subi,
-            'mult': self.mult,
-            'multi': self.multi,
-            'div': self.div,
-            'divi': self.divi,
-            'str': self.store,
-            'ld': self.load,
-            'ldd': self.loadd,
-            'li': self.li,
-            'mov': self.move,
-            'jp': self.jump,
-            'beq': self.beq,
-            'bne': self.bne,
-            'slt': self.slt
-        }
+        self.program_counter = 0
 
-        self.execute()  
+        self.operand_regex = {
+            'register': '(?<=reg)\d*',
+            'immediate': '\d*',
+            'offset': '\d*(?=\(reg\d*\))'
+            }
+
+        self.switcher = {
+            'add': {'function': self.add, 'operands': ['register', 'register', 'register']},
+            'addi': {'function': self.addi, 'operands': ['register', 'register', 'immediate']},
+            'sub': {'function': self.sub, 'operands': ['register', 'register', 'register']},
+            'subi': {'function': self.subi, 'operands': ['register', 'register', 'immediate']},
+            'mult': {'function': self.mult, 'operands': ['register', 'register', 'register']},
+            'multi': {'function': self.multi, 'operands': ['register', 'register', 'immediate']},
+            'div': {'function': self.div, 'operands': ['register', 'register', 'register']},
+            'divi': {'function': self.divi, 'operands': ['register', 'register', 'immediate']},
+            'str': {'function': self.store, 'operands': ['register', ['offset', 'register']]},
+            'ld': {'function': self.load, 'operands': ['register', ['offset', 'register']]},
+            'li': {'function': self.li, 'operands':  ['register', 'immediate']},
+            'mov': {'function': self.move, 'operands': ['register', 'register']},
+            'jp': {'function': self.jump, 'operands': ['immediate']},
+            'beq': {'function': self.beq, 'operands': ['register', 'register', 'immediate']},
+            'bne': {'function': self.bne, 'operands': ['register', 'register', 'immediate']},
+            'slt': {'function': self.slt, 'operands': ['register', 'register', 'register']},
+            }
+
+        self.execute()
 
     def execute(self):
         while(True):
-            #self.write_registers()
-            self.ir = self.main_memory.get_instruction(self.pc)
-            self.pc += 1
-            if not self.decode(self.ir):
+            self.ir = self.main_memory.get_instruction(self.program_counter)
+
+            # No instruction to execute, save the data t6 the secondary mermory and stop
+            if not self.ir:
                 #self.main_memory.save()
-                print(f'MISS RATE = {self.cache.get_miss_rate()}')
                 break
 
-    def decode(self, instruction):
-        operation_code = instruction[0]
-        if operation_code == 'eof':
-            return False
-        else:
-            self.switcher.get(operation_code)(instruction[1])
-            return True
+            self.program_counter += 1
+            self.decode(**self.ir)
+            #self.write_registers()
 
-    def add(self, params):
-        destination, first, second = [int(sub('[^0-9]', '', p)) for p in params]
+    def decode(self, opcode, operands):
+        self.switcher[opcode]['function'](opcode, operands)
+        
+    def process_operands(self, opcode, operands):
+        operands_category = self.switcher[opcode]['operands']
+
+        if len(operands) != len(operands_category):
+            raise Exception(f'Wrong number of operands for {opcode} instruction')
+        
+        processed_operands = []
+        for operand, categories in zip(operands, operands_category):
+            # The inner for loop is needed in order to extract both the offset and register 
+            # from the second operand of load/store insctrution since they look like "0(reg1)"
+            category_list = categories if isinstance(categories, list) else [categories]
+
+            for category in category_list:
+                matched = search(self.operand_regex[category], operand)
+
+                if not matched:
+                    raise Exception(f'Wrong operands types for {opcode} instruction')
+                
+                start, end = matched.span()
+                processed_operands.append(int(operand[start:end]))
+        
+        return processed_operands
+
+    def add(self, opcode, operands):
+        destination, first, second = self.process_operands(opcode, operands)
         self.registers[destination] = self.registers[first] + self.registers[second]
         self.clock_cycle += ALU_CYCLES
 
-    def addi(self, params):
-        destination, first, immediate = [int(sub('[^0-9]', '', p)) for p in params]
+    def addi(self, opcode, operands):
+        destination, first, immediate = self.process_operands(opcode, operands)
         self.registers[destination] = self.registers[first] + immediate
         self.clock_cycle += ALU_CYCLES
 
-    def sub(self, params):
-        destination, first, second = [int(sub('[^0-9]', '', p)) for p in params]
+    def sub(self, opcode, operands):
+        destination, first, second = self.process_operands(opcode, operands)
         self.registers[destination] = self.registers[first] - self.registers[second]
         self.clock_cycle += ALU_CYCLES
 
-    def subi(self, params):
-        destination, first, immediate = [int(sub('[^0-9]', '', p)) for p in params]
+    def subi(self, opcode, operands):
+        destination, first, immediate = self.process_operands(opcode, operands)
         self.registers[destination] = self.registers[first] - immediate
         self.clock_cycle += ALU_CYCLES
 
-    def mult(self, params):
-        destination, first, second = [int(sub('[^0-9]', '', p)) for p in params]
+    def mult(self, opcode, operands):
+        destination, first, second = self.process_operands(opcode, operands)
         self.registers[destination] = self.registers[first] * self.registers[second]
         self.clock_cycle += ALU_CYCLES
 
-    def multi(self, params):
-        destination, first, immediate = [int(sub('[^0-9]', '', p)) for p in params]
+    def multi(self, opcode, operands):
+        destination, first, immediate = self.process_operands(opcode, operands)
         self.registers[destination] = self.registers[first] * immediate
         self.clock_cycle += ALU_CYCLES
 
-    def div(self, params):
-        destination, first, second = [int(sub('[^0-9]', '', p)) for p in params]
+    def div(self, opcode, operands):
+        destination, first, second = self.process_operands(opcode, operands)
         self.registers[destination] = self.registers[first] / self.registers[second]
         self.clock_cycle += ALU_CYCLES
 
-    def divi(self, params):
-        destination, first, immediate = [int(sub('[^0-9]', '', p)) for p in params]
+    def divi(self, opcode, operands):
+        destination, first, immediate = self.process_operands(opcode, operands)
         self.registers[destination] = self.registers[first] / immediate
         self.clock_cycle += ALU_CYCLES
 
-    def store(self, params):
-        source, destination, offset = [int(sub('[^0-9]', '', p)) for p in params]
+    def store(self, opcode, operands):
+        source, offset, destination = self.process_operands(opcode, operands)
         data = self.registers[source]
         address = self.registers[destination]
         self.cache.write(address + offset, data)
         self.clock_cycle += MEMORY_CYCLES
 
-    def li(self, params):
-        destination, immediate = [int(sub('[^0-9]', '', p)) for p in params]
+    def li(self, opcode, operands):
+        destination, immediate = self.process_operands(opcode, operands)
         self.registers[destination] = immediate
         self.clock_cycle += MEMORY_CYCLES
 
-    def load(self, params):
-        destination, source, offset = [int(sub('[^0-9]', '', p)) for p in params]
+    def load(self, opcode, operands):
+        destination, offset, source = self.process_operands(opcode, operands)
         address = self.registers[source]
         self.registers[destination] = self.cache.read(address + offset)
         self.clock_cycle += MEMORY_CYCLES
 
-    def loadd(self, params):
-        destination, source, offset = [int(sub('[^0-9]', '', p)) for p in params]
-        self.registers[destination] = self.cache.read(source + offset)
-        self.clock_cycle += MEMORY_CYCLES
-
-    def move(self, params):
-        destination, source = [int(sub('[^0-9]', '', p)) for p in params]
+    def move(self, opcode, operands):
+        destination, source = self.process_operands(opcode, operands)
         self.registers[destination] = self.registers[source]
         self.clock_cycle += ALU_CYCLES
 
-    def jump(self, params):
-        address = int(sub('[^0-9]', '', params[0]))
-        self.pc = address
+    def jump(self, opcode, operands):
+        address = self.process_operands(opcode, operands)
+        self.program_counter = address
         self.clock_cycle += JUMP_CYCLES
 
-    def beq(self, params):
-        first, second, address= [int(sub('[^0-9]', '', p)) for p in params]
+    def beq(self, opcode, operands):
+        first, second, address = self.process_operands(opcode, operands)
         self.clock_cycle += JUMP_CYCLES
         if self.registers[first] == self.registers[second]:
-            self.pc = address
+            self.program_counter = address
 
-    def bne(self, params):
-        first, second, address = [int(sub('[^0-9]', '', p)) for p in params]
+    def bne(self, opcode, operands):
+        first, second, address = self.process_operands(opcode, operands)
         self.clock_cycle += JUMP_CYCLES
         if self.registers[first] != self.registers[second]:
-            self.pc = address
+            self.program_counter = address
 
-    def slt(self, params):
-        destination, first, second = [int(sub('[^0-9]', '', p)) for p in params]
+    def slt(self, opcode, operands):
+        destination, first, second = self.process_operands(opcode, operands)
         self.clock_cycle += ALU_CYCLES
         if self.registers[first] < self.registers[second]:
             self.registers[destination] = 1
         else:
             self.registers[destination] = 0
 
+
     def write_registers(self):
         with open('registers.txt','a') as file:
-            file.write(f'pc = {self.pc}\n') 
+            file.write(f'pc = {self.program_counter}\n') 
             file.write(f'clock = {self.clock_cycle}\n')
             if self.ir is not '':
-                file.write(f'instruction = {self.ir[0]} {" ".join(self.ir[1])}\n') 
+                file.write(f'instruction = {self.ir["opcode"]} {" ".join(self.ir["operands"])}\n') 
             file.write(f'registers = {" ".join([str(r) for r in self.registers])}\n')
-            file.write(f'memory = {self.main_memory.get_data()}')
-            file.write(f'cache =\n{self.cache.get_cache()}')
+            file.write(f'memory = {str(self.main_memory)}\n')
+            file.write(f'cache =\n{str(self.cache)}')
             file.write(f'miss/hit = {self.cache.get_miss_count()}/{self.cache.get_hit_count()}\n')
             file.write(f'{"-"*10}\n')
-
-def plot(cache_sizes, set_counts, miss_rate):
-    bar_width = 0.1 
-    index = [i for i in range(len(cache_sizes))]
-    colors = ['navy', 'maroon', 'olive', 'gold']
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-
-    rect = []
-    for enum, count in enumerate(set_counts):
-        rect.append(ax.bar([i + (bar_width*enum) for i in index],
-                    miss_rate[count], bar_width, color=colors[enum]))
-
-    ax.set_ylabel('Miss count')
-    ax.set_xticks([i + (bar_width/len(cache_sizes)) for i in index])
-    ax.set_xlabel('Cache size')
-    ax.set_xticklabels(cache_sizes)
-
-    ax.legend(rect, set_counts)
-
-    plt.show()
-
-if __name__ == '__main__':
-    if exists('registers.txt'): remove('registers.txt')
-    if len(sys.argv) != 3: 
-        print('Usage: python processor.py <program_file> <data_file>')
-        sys.exit(1)
-
-    cache_sizes = [32, 63, 128, 256, 512]
-    set_counts = [1, 2, 4, 8]
-    miss_rate = {count: [] for count in set_counts}
-
-    for size in cache_sizes:
-        for count in set_counts:
-            print(f'CACHE DE {size} COM {count} CONJUNTOS')
-            memory = MainMemory(mem_size=3000, 
-                                block_size=4,
-                                program_file=sys.argv[1], 
-                                data_file=sys.argv[2])
-            cache = Cache(cache_size=size,
-                          block_size=4,
-                          set_count=count, 
-                          algorithm='FIFO',
-                          main_memory=memory)
-            cpu = Processor(memory, cache)
-
-            miss_rate[count].append(cache.get_miss_count())
-
-    #memory.save()
-    plot(cache_sizes, set_counts, miss_rate)
-    
