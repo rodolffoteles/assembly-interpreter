@@ -16,9 +16,10 @@ class MainMemory:
             block_size - Size of blocks in which memory is divided
             program_file - Path assembly file to be loaded in memory
             data_file - Path of file where the data is stored
-            save_allowed - Indicates whether or not to overwrite secondary memory 
+            save_allowed - Indicates whether or not to update secondary memory 
         '''
 
+        self.save_allowed = save_allowed
         self.mem_size = mem_size
         self.block_size = block_size
         self.block_count = ceil(mem_size/block_size)
