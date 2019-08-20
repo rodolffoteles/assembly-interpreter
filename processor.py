@@ -20,7 +20,7 @@ class Processor:
         self.cache = cache
         self.registers = zeros(register_count, dtype=int)
         self.clock_cycle = 0
-        self.ir = ''
+        self.instruction_register = ''
         self.program_counter = 0
 
         self.operand_regex = {
@@ -52,14 +52,14 @@ class Processor:
 
     def execute(self):
         while(True):
-            self.ir = self.main_memory.get_instruction(self.program_counter)
+            self.instruction_register = self.main_memory.get_instruction(self.program_counter)
 
             # No instruction to execute, save the data to the secondary memory and stop
-            if not self.ir:
+            if not self.instruction_register:
                 break
 
             self.program_counter += 1
-            self.decode(**self.ir)
+            self.decode(**self.instruction_register)
 
     def decode(self, opcode, operands):
         self.switcher[opcode]['function'](opcode, operands)
